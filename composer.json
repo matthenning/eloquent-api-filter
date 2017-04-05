@@ -1,0 +1,17 @@
+{
+  "name": "matthenning/api-filter",
+  "description": "Simple database filtering through API calls",
+  "authors": [
+    {
+      "name": "Matthias Henning",
+      "email": "pub@matthias-henning.de"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {},
+  "autoload" : {
+    "psr-0" : {
+      "Matthenning\\EloquentApiFilter" : "src"
+    }
+  }
+}
