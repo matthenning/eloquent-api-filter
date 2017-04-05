@@ -17,7 +17,9 @@ class UserController extends Controller
     {
         $users = User::query();
         
-        return (new EloquentApiFilter($request, $query))->filter();
+        $filtered = (new EloquentApiFilter($request, $query))->filter();
+        
+        return $filtered->get();
     }
 }
 ```
