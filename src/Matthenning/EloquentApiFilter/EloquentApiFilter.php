@@ -5,45 +5,26 @@ namespace Matthenning\EloquentApiFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
+/**
+ * Class EloquentApiFilter
+ * @package Matthenning\EloquentApiFilter
+ */
 class EloquentApiFilter {
 
 
+    /**
+     * @var Request
+     */
     private $request;
 
+    /**
+     * @var Builder
+     */
     private $query;
 
     /**
-     * Filters an Eloquent Builder using request parameters
-     *
-     * .../model?filter[field]=operator:comparison
-     * .../model?filter[field]=operator
-     *
-     * Example queries:
-     * .../users?filter[name]=like:Rob*&filter[deceased]=null:
-     * will match all entities where name starts with Rob and deceased is null
-     *
-     * Multiple filters on one field can be chained:
-     * .../users?filter[created_at]=lt:2016-12-10:and:gt:2016-12-08
-     * will match all entities where created_at is between 2016-12-10 and 2016-12-08
-     *
-     * Filter by related models' fields by using the dot-notaion:
-     * .../users?filter[users.posts.name]=like:*API*
-     * will match all Posts of Users where Post name contains "API"
-     *
-     * Filter timestamps
-     * .../users?filter[birthday]=today
-     * will match all users whos' birthdays are today
-     *
-     * Limit and sorting:
-     * .../users?filter[age]=ge:21&order[name]=asc&limit=10
-     * will match the top 10 users with age of 21 or older sorted by name in ascending order
-     *
-     * Operators:
-     * like, notlike, today (for timestamps), nottoday (for timestamps), null, notnull,
-     * ge (greater or equal), gt (greater), le (lower or equal), lt (lower), eq (equal)
-     *
      * @param Request $request
-     * @param $query
+     * @param Builder $query
      */
     public function __construct(Request $request, Builder $query)
     {
