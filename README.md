@@ -60,3 +60,7 @@ Limit and sorting.
 Matches the top 10 users with age of 21 or older sorted by name in ascending order
 
 `.../users?filter[age]=ge:21&order[name]=asc&limit=10`
+
+### Known issues
+
+* Sorting by related fields doesn't work yet.
