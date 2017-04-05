@@ -1,14 +1,25 @@
 {
-  "name": "matthenning/api-filter",
-  "description": "Simple database filtering through API calls",
+  "name": "matthenning/eloquent-api-filter",
+  "description": "Awesome and simple way to filter Eloquent queries right from the API call url",
   "authors": [
     {
       "name": "Matthias Henning",
       "email": "pub@matthias-henning.de"
     }
   ],
+  "keywords": [
+    "eloquent", "api", "filtering"
+  ],
+  "homepage:": "https://github.com/matthenning/eloquent-api-filter",
+  "license": [
+    "GPL-3.0"
+  ],
   "minimum-stability": "dev",
-  "require": {},
+  "require": {
+    "php": ">=5.6.4",
+    "illuminate/database": "~5.4",
+    "illuminate/http": "~5.4"
+  },
   "autoload" : {
     "psr-0" : {
       "Matthenning\\EloquentApiFilter" : "src"
