@@ -43,21 +43,18 @@ Matches all entities where name starts with Rob and deceased is null:
 
 
 Multiple filters on one field can be chained.
-
 Matches all entities where created_at is between 2016-12-10 and 2016-12-08:
 
 `.../users?filter[created_at]=lt:2016-12-10:and:gt:2016-12-08`
 
 
 Filter by related models' fields by using the dot-notaion.
-
 Matches all Posts of Users where Post name contains "API"
 
 `.../users?filter[users.posts.name]=like:*API*`
 
 
 Filter timestamps.
-
 Matches all users whos' birthdays are today
 ```
 .../users?filter[birthday]=today
@@ -65,7 +62,6 @@ Matches all users whos' birthdays are today
 
 
 Limit and sorting.
-
 Matches the top 10 users with age of 21 or older sorted by name in ascending order
 ```
 .../users?filter[age]=ge:21&order[name]=asc&limit=10
