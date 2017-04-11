@@ -15,7 +15,7 @@ class UserController extends Controller
 {    
     public function index(Request $request)
     {
-        $users = User::query();
+        $query = User::query();
         
         $filtered = (new EloquentApiFilter($request, $query))->filter();
         
