@@ -49,7 +49,7 @@ Matches all entities where created_at is between 2016-12-10 and 2016-12-08:
 Filter by related models' fields by using the dot-notaion.
 Matches all Posts of Users where Post name contains "API"
 
-`.../users?filter[users.posts.name]=like:*API*`
+`.../users?filter[posts.name]=like:*API*`
 
 Filter timestamps.
 Matches all users whos' birthdays are today
