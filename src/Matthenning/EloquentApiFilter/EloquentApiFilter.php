@@ -57,7 +57,7 @@ class EloquentApiFilter {
     }
 
     /**
-     * Resolves :and: links and applies each filter
+     * Resolves :and: and :or: links and applies each filter
      *
      * @param Builder $query
      * @param $field
@@ -65,6 +65,39 @@ class EloquentApiFilter {
      * @return Builder
      */
     private function applyFieldFilter(Builder $query, $field, $value)
+    {
+        $query = $this->resolveOrLinks($query, $field, $value);
+
+        return $query;
+    }
+
+    private function resolveOrLinks(Builder $query, $field, $value)
+    {
+        $filters = explode(':or:', $value);
+        if (count($filters) > 1) {
+
+            $that = $this;
+            $query->where(function ($query) use ($filters, $field, $that) {
+                $first = true;
+                foreach ($filters as $filter) {
+                    $verb = $first ? 'where' : 'orWhere';
+                    $query->$verb(function ($query) use ($field, $filter, $that) {
+                        $query = $that->resolveAndLinks($query, $field, $filter);
+                    });
+                    $first = false;
+                }
+            });
+        }
+        else {
+
+            $query = $this->resolveAndLinks($query, $field, $value);
+
+        }
+
+        return $query;
+    }
+
+    private function resolveAndLinks(Builder $query, $field, $value)
     {
         $filters = explode(':and:', $value);
         foreach ($filters as $filter) {
@@ -80,9 +113,10 @@ class EloquentApiFilter {
      * @param Builder $query
      * @param $field
      * @param $filter
+     * @param $or = false
      * @return Builder
      */
-    private function applyFilter(Builder $query, $field, $filter)
+    private function applyFilter(Builder $query, $field, $filter, $or = false)
     {
         $filter = explode(':', $filter);
         if (count($filter) > 1) {
@@ -96,10 +130,10 @@ class EloquentApiFilter {
 
         $fields = explode('.', $field);
         if (count($fields) > 1) {
-            return $this->applyNestedFilter($query, $fields, $operator, $value);
+            return $this->applyNestedFilter($query, $fields, $operator, $value, $or);
         }
         else {
-            return $this->applyWhereClause($query, $field, $operator, $value);
+            return $this->applyWhereClause($query, $field, $operator, $value, $or);
         }
     }
 
@@ -111,9 +145,10 @@ class EloquentApiFilter {
      * @param array $fields
      * @param $operator
      * @param $value
+     * @param $or = false
      * @return Builder
      */
-    private function applyNestedFilter(Builder $query, array $fields, $operator, $value)
+    private function applyNestedFilter(Builder $query, array $fields, $operator, $value, $or = false)
     {
         $relation_name = implode('.', array_slice($fields, 0, count($fields) - 1));
         $relation_field = $fields[count($fields) - 1];
@@ -121,7 +156,7 @@ class EloquentApiFilter {
         $that = $this;
 
         return $query->whereHas($relation_name, function ($query) use ($relation_field, $operator, $value, $that) {
-            $query = $that->applyWhereClause($query, $relation_field, $operator, $value);
+            $query = $that->applyWhereClause($query, $relation_field, $operator, $value, $or);
         });
     }
 
@@ -134,23 +169,28 @@ class EloquentApiFilter {
      * @param $field
      * @param $operator
      * @param $value
+     * @param $or = false
      * @return Builder
      */
-    private function applyWhereClause(Builder $query, $field, $operator, $value) {
+    private function applyWhereClause(Builder $query, $field, $operator, $value, $or = false) {
+        $verb = $or ? 'orWhere' : 'where';
+        $null_verb = $or ? 'orWhereNull' : 'whereNull';
+        $not_null_verb = $or ? 'orWhereNotNull' : 'whereNotNull';
+
         switch ($value) {
             case 'today':
-                return $query->where($field, 'like', Carbon::now()->format('Y-m-d') . '%');
+                return $query->$verb($field, 'like', Carbon::now()->format('Y-m-d') . '%');
             case 'nottoday':
-                return $query->where(function ($q) use ($field) {
+                return $query->$verb(function ($q) use ($field) {
                     $q->where($field, 'not like', Carbon::now()->format('Y-m-d') . '%')
                         ->orWhereNull($field);
                 });
             case 'null':
-                return $query->whereNull($field);
+                return $query->$null_verb($field);
             case 'notnull':
-                return $query->whereNotNull($field);
+                return $query->$not_null_verb($field);
             default:
-                return $query->where($field, $operator, $value);
+                return $query->$verb($field, $operator, $value);
         }
     }
 

@@ -7,7 +7,25 @@ Awesome and simple way to filter Eloquent queries right from the API call url
 composer require matthenning/eloquent-api-filter
 ```
 
-**Usage Example**
+#### Usage Example
+
+**Using the Trait**
+```
+class UserController extends Controller
+{  
+    
+    use Matthenning\EloquentApiFilter\Traits\FiltersEloquentApi;
+    
+    public function index(Request $request)
+    {
+        $users = User::query();
+        
+        return $this->filterApiRequest($request, $users);
+    }
+}
+```
+
+**Using the Class**
 ```
 use Matthenning\EloquentApiFilter\EloquentApiFilter;
 
@@ -24,7 +42,30 @@ class UserController extends Controller
 }
 ```
 
-# Doc
+# Documentation
+
+### New in v1.1
+
+##### Chain multiple queries by and/or:
+```
+.../model?filter[field]=like:*val1:and:like:val2*:or:null
+```
+will result in:
+```
+SELECT * FROM models 
+WHERE (
+            field LIKE '%val1' 
+        AND field LIKE 'val2%'
+      )
+      OR field IS NULL 
+```
+
+##### Added Trait
+
+You can now use Matthenning\EloquentApiFilter\Traits\FiltersEloquentApi to simply filter your requests with
+```
+$this->filterApiRequest($request, $query);
+```
 
 ### URL Syntax
 `.../model?filter[field]=operator:comparison`
