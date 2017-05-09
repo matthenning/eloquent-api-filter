@@ -155,7 +155,7 @@ class EloquentApiFilter {
 
         $that = $this;
 
-        return $query->whereHas($relation_name, function ($query) use ($relation_field, $operator, $value, $that) {
+        return $query->whereHas($relation_name, function ($query) use ($relation_field, $operator, $value, $that, $or) {
             $query = $that->applyWhereClause($query, $relation_field, $operator, $value, $or);
         });
     }
