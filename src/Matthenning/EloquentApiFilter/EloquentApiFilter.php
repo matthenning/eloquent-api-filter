@@ -57,7 +57,7 @@ class EloquentApiFilter {
     }
 
     /**
-     * Resolves :and: and :or: links and applies each filter
+     * Resolves :or: and then :and: links
      *
      * @param Builder $query
      * @param $field
@@ -71,6 +71,14 @@ class EloquentApiFilter {
         return $query;
     }
 
+    /**
+     * Resolves :or: links and then resolves the :and: links in the resulting sections
+     *
+     * @param Builder $query
+     * @param $field
+     * @param $value
+     * @return Builder
+     */
     private function resolveOrLinks(Builder $query, $field, $value)
     {
         $filters = explode(':or:', $value);
@@ -97,6 +105,12 @@ class EloquentApiFilter {
         return $query;
     }
 
+    /**
+     * @param Builder $query
+     * @param $field
+     * @param $value
+     * @return Builder
+     */
     private function resolveAndLinks(Builder $query, $field, $value)
     {
         $filters = explode(':and:', $value);
@@ -108,7 +122,7 @@ class EloquentApiFilter {
     }
 
     /**
-     * Applies a single filter
+     * Applies a single filter to the query
      *
      * @param Builder $query
      * @param $field
@@ -139,7 +153,7 @@ class EloquentApiFilter {
 
     /**
      * Applies a nested filter.
-     * Meaning a filter on a related field
+     * Nested filters are filters on field on related models.
      *
      * @param Builder $query
      * @param array $fields
@@ -162,8 +176,7 @@ class EloquentApiFilter {
 
     /**
      * Applies a where clause.
-     * Is used by applyFilter and applyNestedFilter
-     * to apply the clause to the query.
+     * Is used by applyFilter and applyNestedFilter to apply the clause to the query.
      *
      * @param Builder $query
      * @param $field
@@ -252,7 +265,7 @@ class EloquentApiFilter {
     }
 
     /**
-     * Translated operators to SQL
+     * Translates operators to SQL
      *
      * @param $filter
      * @return mixed
