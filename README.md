@@ -72,6 +72,8 @@ $this->filterApiRequest($request, $query);
 
 `.../model?filter[field]=operator`
 
+`.../model?with[]=relation1`
+
 ### Operators:
 like, notlike, today (for timestamps), nottoday (for timestamps), null, notnull,
 ge (greater or equal), gt (greater), le (lower or equal), lt (lower), eq (equal)
@@ -101,6 +103,10 @@ Limit and sorting.
 Matches the top 10 users with age of 21 or older sorted by name in ascending order
 
 `.../users?filter[age]=ge:21&order[name]=asc&limit=10`
+
+Join posts-relation on users
+
+`.../users?with[]=posts`
 
 ### Known issues
 
