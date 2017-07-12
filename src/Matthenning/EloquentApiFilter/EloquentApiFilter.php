@@ -37,6 +37,10 @@ class EloquentApiFilter {
      */
     public function filter()
     {
+        if ($this->request->has('with')) {
+            $this->query = $this->joinRelations($this->query, $this->request->input('with'));
+        }
+
         if ($this->request->has('filter')) {
             foreach ($this->request->input('filter') as $field=>$value) {
                 $this->query = $this->applyFieldFilter($this->query, $field, $value);
@@ -54,6 +58,21 @@ class EloquentApiFilter {
         }
 
         return $this->query;
+    }
+
+    /**
+     * Adds relations from the $relations array
+     * Each field's value needs to be a valid name of a relation
+     *
+     * @param Builder $query
+     * @param array $relations
+     * @return Builder
+     */
+    private function joinRelations(Builder $query, array $relations)
+    {
+        $query = $query->with(...$relations);
+
+        return $query;
     }
 
     /**
