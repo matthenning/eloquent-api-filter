@@ -209,6 +209,8 @@ class EloquentApiFilter {
         $null_verb = $or ? 'orWhereNull' : 'whereNull';
         $not_null_verb = $or ? 'orWhereNotNull' : 'whereNotNull';
 
+        $value = $this->base64decodeIfNecessary($value);
+
         switch ($value) {
             case 'today':
                 return $query->$verb($field, 'like', Carbon::now()->format('Y-m-d') . '%');
@@ -268,6 +270,7 @@ class EloquentApiFilter {
      */
     private function applyOrderByClause(Builder $query, $field, $value)
     {
+        $value = $this->base64decodeIfNecessary($value);
         return $query->orderBy($field, $value);
     }
 
@@ -299,5 +302,24 @@ class EloquentApiFilter {
         $operator = str_replace('eq', '=', $operator);
 
         return $operator;
+    }
+
+    /**
+     * Searches for {{b64(some based 64 encoded string)}}
+     * If found, returns the decoded content
+     * If not, returns the original value
+     *
+     * @param $value
+     * @return bool|string
+     */
+    private function base64decodeIfNecessary($value)
+    {
+        preg_match("/\{\{b64\((.*)\)\}\}/", $value, $matches);
+        if ($matches) {
+            return base64_decode($matches[1]);
+        }
+        else {
+            return $value;
+        }
     }
 }

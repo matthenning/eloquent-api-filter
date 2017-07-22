@@ -44,27 +44,20 @@ class UserController extends Controller
 
 # Documentation
 
-### New in v1.1
+### New in v1.3
 
-##### Chain multiple queries by and/or:
+##### Use base64 encoded values
 ```
-.../model?filter[field]=like:*val1:and:like:val2*:or:null
+.../model?filter[field]=lt:{{b64(MjAxNy0wNy0yMiAyMzo1OTo1OQ==)}}
 ```
 will result in:
 ```
-SELECT * FROM models 
-WHERE (
-            field LIKE '%val1' 
-        AND field LIKE 'val2%'
-      )
-      OR field IS NULL 
-```
-
-##### Added Trait
-
-You can now use Matthenning\EloquentApiFilter\Traits\FiltersEloquentApi to simply filter your requests with
-```
-$this->filterApiRequest($request, $query);
+SELECT 
+    * 
+FROM 
+    models 
+WHERE 
+    field < '2017-07-22 23:59:59'
 ```
 
 ### URL Syntax
@@ -107,6 +100,10 @@ Matches the top 10 users with age of 21 or older sorted by name in ascending ord
 Join posts-relation on users
 
 `.../users?with[]=posts`
+
+Filter for a base64 encoded value
+
+`.../model?filter[field]=lt:{{b64(MjAxNy0wNy0yMiAyMzo1OTo1OQ==)}}`
 
 ### Known issues
 
