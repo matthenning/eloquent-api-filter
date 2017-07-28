@@ -44,6 +44,16 @@ class UserController extends Controller
 
 # Documentation
 
+### New in v1.4
+
+##### Filter by not existing related models
+
+```
+.../model?filter[!relation.type]=value
+```
+
+Will match if there is no model of the relation where type = 'value'
+
 ### New in v1.3
 
 ##### Use base64 encoded values
