@@ -184,7 +184,16 @@ class EloquentApiFilter {
     private function applyNestedFilter(Builder $query, array $fields, $operator, $value, $or = false)
     {
         $relation_name = implode('.', array_slice($fields, 0, count($fields) - 1));
-        $relation_field = $fields[count($fields) - 1];
+        $relation_field = end($fields);
+        if ($relation_name[0] == '!') {
+            $relation_name = substr($relation_name, 1, strlen($relation_name));
+
+            $that = $this;
+
+            return $query->whereHas($relation_name, function ($query) use ($relation_field, $operator, $value, $that, $or) {
+                $query = $that->applyWhereClause($query, $relation_field, $operator, $value, $or);
+            }, '=', 0);
+        }
 
         $that = $this;
 
