@@ -309,6 +309,7 @@ class EloquentApiFilter {
         $operator = str_replace('lt', '<', $operator);
         $operator = str_replace('le', '<=', $operator);
         $operator = str_replace('eq', '=', $operator);
+        $operator = str_replace('ne', '!=', $operator);
 
         return $operator;
     }
