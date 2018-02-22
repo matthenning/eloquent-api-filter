@@ -44,32 +44,6 @@ class UserController extends Controller
 
 # Documentation
 
-### New in v1.4
-
-##### Filter by not existing related models
-
-```
-.../model?filter[!relation.type]=value
-```
-
-Will match if there is no model of the relation where type = 'value'
-
-### New in v1.3
-
-##### Use base64 encoded values
-```
-.../model?filter[field]=lt:{{b64(MjAxNy0wNy0yMiAyMzo1OTo1OQ==)}}
-```
-will result in:
-```
-SELECT 
-    * 
-FROM 
-    models 
-WHERE 
-    field < '2017-07-22 23:59:59'
-```
-
 ### URL Syntax
 `.../model?filter[field]=operator:comparison`
 
@@ -77,9 +51,21 @@ WHERE
 
 `.../model?with[]=relation1`
 
+`.../model?with[]=relation1&filter[relation1.field]=operator:comparison`
+
 ### Operators:
-like, notlike, today (for timestamps), nottoday (for timestamps), null, notnull,
-ge (greater or equal), gt (greater), le (lower or equal), lt (lower), eq (equal)
+* eq (equal, can be omitted)
+* ne (not equal)
+* ge (greater or equal)
+* gt (greater)
+* le (lower or equal)
+* lt (lower)
+* null
+* notnull,
+* like
+* notlike
+* today (for timestamps)
+* nottoday (for timestamps)
 
 ### Example queries
 
@@ -114,6 +100,42 @@ Join posts-relation on users
 Filter for a base64 encoded value
 
 `.../model?filter[field]=lt:{{b64(MjAxNy0wNy0yMiAyMzo1OTo1OQ==)}}`
+
+
+
+### New in v1.4.1
+
+Added missing not-equal:
+```
+.../model?filter[state]=ne:deleted
+```
+
+### New in v1.4
+
+##### Filter by not existing related models
+
+```
+.../model?filter[!relation.type]=value
+```
+
+Will match if there is no model of the relation where type = 'value'
+
+### New in v1.3
+
+##### Use base64 encoded values
+```
+.../model?filter[field]=lt:{{b64(MjAxNy0wNy0yMiAyMzo1OTo1OQ==)}}
+```
+will result in:
+```
+SELECT 
+    * 
+FROM 
+    models 
+WHERE 
+    field < '2017-07-22 23:59:59'
+```
+
 
 ### Known issues
 
