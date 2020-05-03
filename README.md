@@ -60,6 +60,8 @@ class UserController extends Controller
 * gt (greater)
 * le (lower or equal)
 * lt (lower)
+* in (expects a comma separated array as value)
+* notin (expects a comma separated array as value)
 * null
 * notnull,
 * like
@@ -88,6 +90,10 @@ Matches all users whos' birthdays are today
 
 `.../users?filter[birthday]=today`
 
+Get all users with name Rob and Bob
+
+`.../users?filter[name]=in:Rob,Bob`
+
 Limit and sorting.
 Matches the top 10 users with age of 21 or older sorted by name in ascending order
 
@@ -101,7 +107,12 @@ Filter for a base64 encoded value
 
 `.../model?filter[field]=lt:{{b64(MjAxNy0wNy0yMiAyMzo1OTo1OQ==)}}`
 
+### New in v1.5
 
+Added in and notin:
+```
+.../model?filter[state]=in:draft,deleted
+```
 
 ### New in v1.4.1
 
