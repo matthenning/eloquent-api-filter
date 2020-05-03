@@ -215,6 +215,8 @@ class EloquentApiFilter {
      */
     private function applyWhereClause(Builder $query, $field, $operator, $value, $or = false) {
         $verb = $or ? 'orWhere' : 'where';
+        $in_verb = $or ? 'orWhereIn' : 'whereIn';
+        $not_in_verb = $or ? 'orWhereNotIn' : 'whereNotIn';
         $null_verb = $or ? 'orWhereNull' : 'whereNull';
         $not_null_verb = $or ? 'orWhereNotNull' : 'whereNotNull';
 
@@ -233,6 +235,13 @@ class EloquentApiFilter {
             case 'notnull':
                 return $query->$not_null_verb($field);
             default:
+                if ($operator == 'in') {
+                    return $query->$in_verb($field, explode(',', $value));
+                }
+                if ($operator == 'notin') {
+                    return $query->$not_in_verb($field, explode(',', $value));
+                }
+
                 return $query->$verb($field, $operator, $value);
         }
     }
