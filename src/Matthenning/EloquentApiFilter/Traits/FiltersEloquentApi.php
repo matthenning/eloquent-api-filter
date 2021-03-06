@@ -16,7 +16,7 @@ trait FiltersEloquentApi {
     /**
      * @param Request $request
      * @param EloquentBuilder|QueryBuilder $query
-     * @return Builder
+     * @return EloquentBuilder|QueryBuilder
      */
     protected function filterApiRequest(Request $request, EloquentBuilder|QueryBuilder $query)
     {
