@@ -3,6 +3,7 @@
 namespace Matthenning\EloquentApiFilter\Traits;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Matthenning\EloquentApiFilter\EloquentApiFilter;
@@ -18,7 +19,7 @@ trait FiltersEloquentApi {
      * @param EloquentBuilder|QueryBuilder $query
      * @return EloquentBuilder|QueryBuilder
      */
-    protected function filterApiRequest(Request $request, EloquentBuilder|QueryBuilder $query)
+    protected function filterApiRequest(Request $request, EloquentBuilder|QueryBuilder|Relation $query)
     {
         $eaf = new EloquentApiFilter($request, $query);
         return $eaf->filter();
