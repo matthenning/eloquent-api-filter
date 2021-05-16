@@ -1,4 +1,6 @@
 # eloquent-api-filter
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmatthenning%2Feloquent-api-filter.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmatthenning%2Feloquent-api-filter?ref=badge_shield)
+
 Awesome and simple way to filter Eloquent queries right from the API call url
 
 
@@ -151,3 +153,7 @@ WHERE
 ### Known issues
 
 * Sorting by related fields doesn't work yet.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmatthenning%2Feloquent-api-filter.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmatthenning%2Feloquent-api-filter?ref=badge_large)
