@@ -24,7 +24,7 @@ The easiest method out of the box is to simply extend the included controller.
 
 The easiest way to use the Eloquent API Filter is to extend its controller.
 For this example, let's say you have a model named Person. You'll just have to create a matching controller and use the included traits to use the default methods for index, show, store, update, destroy:
-```
+```php
 use Matthenning\EloquentApiFilter\Controller;
 
 class PersonController extends Controller
@@ -35,13 +35,13 @@ class PersonController extends Controller
 
 The only thing left to do is setting up the matching routes:
 
-```
+```php
 Route::resource('persons', \App\Http\Controllers\PersonController::class);
 ```
 
 Eloquent API Filter will automatically find the matching model class as long as you follow the naming scheme of this example. If you have custom names or namespaces, you can override the modelName property within your controller:
 
-```
+```php
 protected ?string $modelName = Person::class;
 ```
 
@@ -50,12 +50,12 @@ And you're done! Start querying your API: `/persons/?filter[age]=23`
 If you're using custom resources (https://laravel.com/docs/master/eloquent-resources) you can override the resourceName property.
 Make sure to extend the JsonResource class and override the toArray() method. See the included Resource as a template.
 
-```
+```php
 protected ?string $resourceName = PersonResource::class;
 ```
 
 ### Option 2: Use the trait
-```
+```php
 class PersonController extends Controller
 {  
     
@@ -71,7 +71,7 @@ class PersonController extends Controller
 ```
 
 ### Option 3: Query the filter directly
-```
+```php
 use Matthenning\EloquentApiFilter\EloquentApiFilter;
 
 class PersonController extends Controller
@@ -199,8 +199,7 @@ If you need to filter for a value with special characters, you can base64 encode
 
 `.../model?filter[field]=lt:{{b64(MjAxNy0wNy0yMiAyMzo1OTo1OQ==)}}`
 
-<p><br /></p>
+## What if I need more?
 
-### Known issues
-
-* Sorting by related fields doesn't work yet.
+In case you need complex queries which are not covered by this library, you can use the EloquentApiFilter trait in your custom controller and further filter the query before retrieving the models.
+That way you can still use the filter features and only need to add your custom filtering before returning the retrieved models.
