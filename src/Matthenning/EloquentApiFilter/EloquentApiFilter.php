@@ -2,6 +2,7 @@
 
 namespace Matthenning\EloquentApiFilter;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -17,27 +18,30 @@ class EloquentApiFilter {
     /**
      * @var Request
      */
-    private $request;
+    private Request $request;
 
     /**
-     * @var EloquentBuilder|QueryBuilder
+     * @var EloquentBuilder|QueryBuilder|Relation
      */
-    private $query;
+    private EloquentBuilder|QueryBuilder|Relation $query;
 
     /**
      * @param Request $request
      * @param EloquentBuilder|QueryBuilder|Relation $query
      */
-    public function __construct(Request $request, EloquentBuilder|QueryBuilder|Relation $query)
+    public function __construct(
+        Request $request,
+        EloquentBuilder|QueryBuilder|Relation $query
+    )
     {
         $this->request = $request;
         $this->query = $query;
     }
 
     /**
-     * @return EloquentBuilder|QueryBuilder
+     * @return EloquentBuilder|QueryBuilder|Relation
      */
-    public function filter()
+    public function filter(): EloquentBuilder|QueryBuilder|Relation
     {
         if ($this->request->has('with')) {
             $this->query = $this->joinRelations($this->query, $this->request->input('with'));
@@ -72,9 +76,12 @@ class EloquentApiFilter {
      *
      * @param EloquentBuilder|QueryBuilder|Relation $query
      * @param array $relations
-     * @return EloquentBuilder|QueryBuilder
+     * @return EloquentBuilder|QueryBuilder|Relation
      */
-    private function joinRelations(EloquentBuilder|QueryBuilder|Relation $query, array $relations)
+    private function joinRelations(
+        EloquentBuilder|QueryBuilder|Relation $query,
+        array $relations
+    ): EloquentBuilder|QueryBuilder|Relation
     {
         $query = $query->with(...$relations);
 
@@ -85,11 +92,15 @@ class EloquentApiFilter {
      * Resolves :or: and then :and: links
      *
      * @param EloquentBuilder|QueryBuilder|Relation $query
-     * @param $field
-     * @param $value
-     * @return EloquentBuilder|QueryBuilder
+     * @param string $field
+     * @param string $value
+     * @return EloquentBuilder|QueryBuilder|Relation
      */
-    private function applyFieldFilter(EloquentBuilder|QueryBuilder|Relation $query, $field, $value)
+    private function applyFieldFilter(
+        EloquentBuilder|QueryBuilder|Relation $query,
+        string $field,
+        string $value
+    ): EloquentBuilder|QueryBuilder|Relation
     {
         $query = $this->resolveOrLinks($query, $field, $value);
 
@@ -100,11 +111,15 @@ class EloquentApiFilter {
      * Resolves :or: links and then resolves the :and: links in the resulting sections
      *
      * @param EloquentBuilder|QueryBuilder|Relation $query
-     * @param $field
-     * @param $value
-     * @return EloquentBuilder|QueryBuilder
+     * @param string $field
+     * @param string $value
+     * @return EloquentBuilder|QueryBuilder|Relation
      */
-    private function resolveOrLinks(EloquentBuilder|QueryBuilder|Relation $query, $field, $value)
+    private function resolveOrLinks(
+        EloquentBuilder|QueryBuilder|Relation $query,
+        string $field,
+        string $value
+    ): EloquentBuilder|QueryBuilder|Relation
     {
         $filters = explode(':or:', $value);
         if (count($filters) > 1) {
@@ -132,11 +147,15 @@ class EloquentApiFilter {
 
     /**
      * @param EloquentBuilder|QueryBuilder|Relation $query
-     * @param $field
-     * @param $value
-     * @return EloquentBuilder|QueryBuilder
+     * @param string $field
+     * @param string $value
+     * @return EloquentBuilder|QueryBuilder|Relation
      */
-    private function resolveAndLinks(EloquentBuilder|QueryBuilder|Relation $query, $field, $value)
+    private function resolveAndLinks(
+        EloquentBuilder|QueryBuilder|Relation $query,
+        string $field,
+        string $value
+    ): EloquentBuilder|QueryBuilder|Relation
     {
         $filters = explode(':and:', $value);
         foreach ($filters as $filter) {
@@ -150,12 +169,17 @@ class EloquentApiFilter {
      * Applies a single filter to the query
      *
      * @param EloquentBuilder|QueryBuilder|Relation $query
-     * @param $field
-     * @param $filter
-     * @param $or = false
-     * @return EloquentBuilder|QueryBuilder
+     * @param string $field
+     * @param string $filter
+     * @param bool $or = false
+     * @return EloquentBuilder|QueryBuilder|Relation
      */
-    private function applyFilter(EloquentBuilder|QueryBuilder|Relation $query, $field, $filter, $or = false)
+    private function applyFilter(
+        EloquentBuilder|QueryBuilder|Relation $query,
+        string $field,
+        string $filter,
+        bool $or = false
+    ): EloquentBuilder|QueryBuilder|Relation
     {
         $filter = explode(':', $filter);
         if (count($filter) > 1) {
@@ -182,12 +206,18 @@ class EloquentApiFilter {
      *
      * @param EloquentBuilder|QueryBuilder|Relation $query
      * @param array $fields
-     * @param $operator
-     * @param $value
-     * @param $or = false
-     * @return EloquentBuilder|QueryBuilder
+     * @param string $operator
+     * @param string $value
+     * @param bool $or = false
+     * @return EloquentBuilder|QueryBuilder|Relation
      */
-    private function applyNestedFilter(EloquentBuilder|QueryBuilder|Relation $query, array $fields, $operator, $value, $or = false)
+    private function applyNestedFilter(
+        EloquentBuilder|QueryBuilder|Relation $query,
+        array $fields,
+        string $operator,
+        string $value,
+        bool $or = false
+    ): EloquentBuilder|QueryBuilder|Relation
     {
         $relation_name = implode('.', array_slice($fields, 0, count($fields) - 1));
         $relation_field = end($fields);
@@ -216,10 +246,17 @@ class EloquentApiFilter {
      * @param $field
      * @param $operator
      * @param $value
-     * @param $or = false
-     * @return EloquentBuilder|QueryBuilder
+     * @param bool $or = false
+     * @return EloquentBuilder|QueryBuilder|Relation
      */
-    private function applyWhereClause(EloquentBuilder|QueryBuilder|Relation $query, $field, $operator, $value, $or = false) {
+    private function applyWhereClause(
+        EloquentBuilder|QueryBuilder|Relation $query,
+        string $field,
+        string $operator,
+        string $value,
+        bool $or = false
+    ): EloquentBuilder|QueryBuilder|Relation
+    {
         $verb = $or ? 'orWhere' : 'where';
         $in_verb = $or ? 'orWhereIn' : 'whereIn';
         $not_in_verb = $or ? 'orWhereNotIn' : 'whereNotIn';
@@ -254,11 +291,15 @@ class EloquentApiFilter {
 
     /**
      * @param EloquentBuilder|QueryBuilder|Relation $query
-     * @param $field
-     * @param $value
-     * @return mixed
+     * @param string $field
+     * @param string $value
+     * @return EloquentBuilder|QueryBuilder|Relation
      */
-    private function applyOrder(EloquentBuilder|QueryBuilder|Relation $query, $field, $value)
+    private function applyOrder(
+        EloquentBuilder|QueryBuilder|Relation $query,
+        string $field,
+        string $value
+    ): EloquentBuilder|QueryBuilder|Relation
     {
         $fields = explode('.', $field);
         if (count($fields) > 1) {
@@ -272,13 +313,18 @@ class EloquentApiFilter {
     /**
      * @TODO: This does not work yet. Order by doesn't seem to support this the same way whereHas does
      *
-     * @param $relation_name
+     * @param string $relation_name
      * @param EloquentBuilder|QueryBuilder|Relation $query
-     * @param $relation_field
-     * @param $value
-     * @return mixed
+     * @param string $relation_field
+     * @param string $value
+     * @return EloquentBuilder|QueryBuilder|Relation
      */
-    private function applyNestedOrder($relation_name, EloquentBuilder|QueryBuilder|Relation $query, $relation_field, $value)
+    private function applyNestedOrder(
+        string $relation_name,
+        EloquentBuilder|QueryBuilder|Relation $query,
+        string $relation_field,
+        string $value
+    ): EloquentBuilder|QueryBuilder|Relation
     {
         $that = $this;
         return $query->orderBy($relation_name, function ($query) use ($relation_field, $value, $that) {
@@ -288,11 +334,15 @@ class EloquentApiFilter {
 
     /**
      * @param EloquentBuilder|QueryBuilder|Relation $query
-     * @param $field
-     * @param $value
-     * @return mixed
+     * @param string $field
+     * @param string $value
+     * @return EloquentBuilder|QueryBuilder|Relation
      */
-    private function applyOrderByClause(EloquentBuilder|QueryBuilder|Relation $query, $field, $value)
+    private function applyOrderByClause(
+        EloquentBuilder|QueryBuilder|Relation $query,
+        string $field,
+        string $value
+    ): EloquentBuilder|QueryBuilder|Relation
     {
         $value = $this->base64decodeIfNecessary($value);
         return $query->orderBy($field, $value);
@@ -302,10 +352,10 @@ class EloquentApiFilter {
      * Replaces * wildcards with %
      * for usage in SQL
      *
-     * @param $value
-     * @return mixed
+     * @param string $value
+     * @return string
      */
-    private function replaceWildcards($value)
+    private function replaceWildcards(string $value): string
     {
         return str_replace('*', '%', $value);
     }
@@ -313,10 +363,10 @@ class EloquentApiFilter {
     /**
      * Translates operators to SQL
      *
-     * @param $filter
-     * @return mixed
+     * @param string $filter
+     * @return string
      */
-    private function getFilterOperator($filter)
+    private function getFilterOperator(string $filter): string
     {
         $operator = str_replace('notlike', 'not like', $filter);
         $operator = str_replace('gt', '>', $operator);
@@ -334,10 +384,10 @@ class EloquentApiFilter {
      * If found, returns the decoded content
      * If not, returns the original value
      *
-     * @param $value
-     * @return bool|string
+     * @param string $value
+     * @return string
      */
-    private function base64decodeIfNecessary($value)
+    private function base64decodeIfNecessary(string $value): string
     {
         preg_match("/\{\{b64\((.*)\)\}\}/", $value, $matches);
         if ($matches) {
