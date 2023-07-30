@@ -1,7 +1,8 @@
-# eloquent-api-filter
+<p align="center"> <img src="logo.png" width="200px"></p>
+<h1 align="center">eloquent-api-filter</h1>
+<p align="center">
 Awesome and simple way to filter Eloquent queries right from the API URL.
-
-This library allows you to use a single generic controller to handle even complex API requests.
+</p>
 
 # Installation
 ## Package installation
@@ -99,7 +100,8 @@ Matches all users whos' birthdays are today
 
 `.../users?filter[birthday]=today`
 
-###
+<p><br /></p>
+
 ## Sorting
 
 ### URL Syntax
@@ -113,7 +115,8 @@ Matches the top 10 users with age of 21 or older sorted by name in ascending ord
 
 `.../users?filter[age]=ge:21&order[name]=asc&limit=10`
 
-###
+<p><br /></p>
+
 ## Select fields
 
 Select only specific columns. Might need additional work on your model transformation.
@@ -126,7 +129,8 @@ Select only specific columns. Might need additional work on your model transform
 
 `.../users?select=name,email`
 
-###
+<p><br /></p>
+
 ## Joins
 
 ### URL Syntax
@@ -141,7 +145,8 @@ Join posts-relation on users
 
 `.../users?with[]=posts`
 
-###
+<p><br /></p>
+
 ## Complex values
 
 If you need to filter for a value with special characters, you can base64 encode the field to avoid breaking the filter syntax.
@@ -154,7 +159,8 @@ If you need to filter for a value with special characters, you can base64 encode
 
 `.../model?filter[field]=lt:{{b64(MjAxNy0wNy0yMiAyMzo1OTo1OQ==)}}`
 
-###
+<p><br /></p>
+
 ### Known issues
 
 * Sorting by related fields doesn't work yet.
