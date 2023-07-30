@@ -16,10 +16,13 @@ trait FiltersEloquentApi {
 
     /**
      * @param Request $request
-     * @param EloquentBuilder|QueryBuilder $query
-     * @return EloquentBuilder|QueryBuilder
+     * @param EloquentBuilder|QueryBuilder|Relation $query
+     * @return EloquentBuilder|QueryBuilder|Relation
      */
-    protected function filterApiRequest(Request $request, EloquentBuilder|QueryBuilder|Relation $query)
+    protected function filterApiRequest(
+        Request $request,
+        EloquentBuilder|QueryBuilder|Relation $query
+    ): EloquentBuilder|QueryBuilder|Relation
     {
         $eaf = new EloquentApiFilter($request, $query);
         return $eaf->filter();
