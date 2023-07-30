@@ -47,7 +47,8 @@ protected ?string $modelName = Person::class;
 
 And you're done! Start querying your API: `/persons/?filter[age]=23`
 
-If you're using custom resources (https://laravel.com/docs/master/eloquent-resources) you can override the resourceName property:
+If you're using custom resources (https://laravel.com/docs/master/eloquent-resources) you can override the resourceName property.
+Make sure to extend the JsonResource class and override the toArray() method. See the included Resource as a template.
 
 ```
 protected ?string $resourceName = PersonResource::class;
