@@ -42,10 +42,16 @@ Route::resource('persons', \App\Http\Controllers\PersonController::class);
 Eloquent API Filter will automatically find the matching model class as long as you follow the naming scheme of this example. If you have custom names or namespaces, you can override the modelName property within your controller:
 
 ```
-protected ?string $modelName = YouCustomModel::class;
+protected ?string $modelName = Person::class;
 ```
 
 And you're done! Start querying your API: `/persons/?filter[age]=23`
+
+If you're using custom resources (https://laravel.com/docs/master/eloquent-resources) you can override the resourceName property:
+
+```
+protected ?string $resourceName = PersonResource::class;
+```
 
 ### Option 2: Use the trait
 ```
