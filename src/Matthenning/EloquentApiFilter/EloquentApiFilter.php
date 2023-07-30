@@ -60,7 +60,7 @@ class EloquentApiFilter {
         }
 
         if ($this->request->has('select')) {
-            $this->query = $this->query->select(explode(', ', $this->request->input('select')));
+            $this->query = $this->query->select(explode(',', $this->request->input('select')));
         }
 
         return $this->query;
