@@ -59,6 +59,10 @@ class EloquentApiFilter {
             $this->query = $this->query->limit($this->request->input('limit'));
         }
 
+        if ($this->request->has('select')) {
+            $this->query = $this->query->select(explode(', ', $this->request->input('select')));
+        }
+
         return $this->query;
     }
 
