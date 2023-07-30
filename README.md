@@ -4,6 +4,11 @@
 Awesome and simple way to filter Eloquent queries right from the API URL without the clutter.
 </p>
 
+# Concept
+
+When developing API applications, you'll often end up with lots of duplicate code within your controllers. Eloquent API Filter offers a simple way to expose your models through the API by defining a route and a tiny controller.
+Your controller only needs to use a few traits and you'll be up and running.
+
 # Installation
 ## Package installation
 ```
@@ -17,7 +22,7 @@ The easiest method out of the box is to simply extend the included controller.
 
 ### Option 1: Extend the controller (recommended)
 
-The easiest way to use the Eloquent API Filter is to to extend its controller.
+The easiest way to use the Eloquent API Filter is to extend its controller.
 For this example, let's say you have a model named Person. You'll just have to create a matching controller and use the included traits to use the default methods for index, show, store, update, destroy:
 ```
 use Matthenning\EloquentApiFilter\Controller;
