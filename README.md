@@ -1,7 +1,7 @@
 <p align="center"> <img src="logo.png" width="200px"></p>
-<h1 align="center">eloquent-api-filter</h1>
+<h1 align="center">Eloquent API Filter</h1>
 <p align="center">
-Awesome and simple way to filter Eloquent queries right from the API URL.
+Awesome and simple way to filter Eloquent queries right from the API URL without the clutter.
 </p>
 
 # Installation
@@ -12,33 +12,61 @@ composer require matthenning/eloquent-api-filter
 
 ## Controller setup
 
-Usage demonstrated using the User model:
+You have the choice to use either of the following methods to leverage the filter.
+The easiest method out of the box is to simply extend the included controller.
 
-**Trait (recommended)**
+### Option 1: Extend the controller (recommended)
+
+The easiest way to use the Eloquent API Filter is to to extend its controller.
+For this example, let's say you have a model named Person. You'll just have to create a matching controller and use the included traits to use the default methods for index, show, store, update, destroy:
 ```
-class UserController extends Controller
+use Matthenning\EloquentApiFilter\Controller;
+
+class PersonController extends Controller
+{
+    uses UsesDefaultIndexMethod;
+} 
+```
+
+The only thing left to do is setting up the matching routes:
+
+```
+Route::resource('persons', \App\Http\Controllers\PersonController::class);
+```
+
+Eloquent API Filter will automatically find the matching model class as long as you follow the naming scheme of this example. If you have custom names or namespaces, you can override the modelName property within your controller:
+
+```
+protected ?string $modelName = YouCustomModel::class;
+```
+
+And you're done! Start querying your API: `/persons/?filter[age]=23`
+
+### Option 2: Use the trait
+```
+class PersonController extends Controller
 {  
     
     use Matthenning\EloquentApiFilter\Traits\FiltersEloquentApi;
     
     public function index(Request $request)
     {
-        $users = User::query();
+        $persons = Person::query();
         
-        return $this->filterApiRequest($request, $users);
+        return $this->filterApiRequest($request, $persons);
     }
 }
 ```
 
-**Class**
+### Option 3: Query the filter directly
 ```
 use Matthenning\EloquentApiFilter\EloquentApiFilter;
 
-class UserController extends Controller
+class PersonController extends Controller
 {    
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = Person::query();
         
         $filtered = (new EloquentApiFilter($request, $query))->filter();
         
@@ -77,28 +105,28 @@ Filter for equality: `.../model?filter[field]=operator`
 ### Examples
 Matches all entities where name starts with Rob and deceased is null:
 
-`.../users?filter[name]=like:Rob*&filter[deceased]=null:`
+`.../persons?filter[name]=like:Rob*&filter[deceased]=null:`
 
 Multiple filters on one field can be chained.
 Matches all entities where created_at is between 2016-12-10 and 2016-12-08:
 
-`.../users?filter[created_at]=lt:2016-12-10:and:gt:2016-12-08`
+`.../persons?filter[created_at]=lt:2016-12-10:and:gt:2016-12-08`
 
 Filter by related models' fields by using the dot-notaion.
-Matches all Posts of Users where Post name contains "API"
+Matches all Posts of Persons where Post name contains "API"
 
-`.../users?filter[posts.name]=like:*API*`
+`.../persons?filter[posts.name]=like:*API*`
 
-Get all users with name Rob and Bob
+Get all persons with name Rob and Bob
 
-`.../users?filter[name]=in:Rob,Bob`
+`.../persons?filter[name]=in:Rob,Bob`
 
 ### Special filters
 
 #### Timestamps
-Matches all users whos' birthdays are today
+Matches all persons whos' birthdays are today
 
-`.../users?filter[birthday]=today`
+`.../persons?filter[birthday]=today`
 
 <p><br /></p>
 
@@ -111,9 +139,9 @@ Matches all users whos' birthdays are today
 ### Examples
 
 Limit and sorting.
-Matches the top 10 users with age of 21 or older sorted by name in ascending order
+Matches the top 10 persons with age of 21 or older sorted by name in ascending order
 
-`.../users?filter[age]=ge:21&order[name]=asc&limit=10`
+`.../persons?filter[age]=ge:21&order[name]=asc&limit=10`
 
 <p><br /></p>
 
@@ -127,7 +155,7 @@ Select only specific columns. Might need additional work on your model transform
 
 ### Examples
 
-`.../users?select=name,email`
+`.../persons?select=name,email`
 
 <p><br /></p>
 
@@ -141,9 +169,9 @@ Select only specific columns. Might need additional work on your model transform
 
 ### Examples
 
-Join posts-relation on users
+Join posts-relation on persons
 
-`.../users?with[]=posts`
+`.../persons?with[]=posts`
 
 <p><br /></p>
 
