@@ -4,7 +4,6 @@ namespace Matthenning\EloquentApiFilter;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\JsonResponse;
@@ -20,37 +19,27 @@ abstract class Controller extends BaseController
 
     /**
      * If the controller name does not match
-     * the schema {Model}Controller, set this
+     * the schema {Model}Controller or the model
+     * is in another namespace, set this
      * property to the model's name.
      *
      * @var string|null
      */
-    protected ?string $overrideModelName = null;
+    protected ?string $modelName = null;
 
     /**
-     * Before transformation, you have the option
-     * to call another method on the model to enrich
-     * its data.
+     * If you want to use custom resources,
+     * define its name in this property.
+     *
+     * Resource doc: https://laravel.com/docs/master/eloquent-resources
      *
      * @var string|null
      */
-    protected ?string $overrideEnrichMethod = null;
+    protected ?string $resourceName = Resource::class;
 
     /**
-     * Per default, we expect a transform() method
-     * to be present on the model. If it's not you
-     * can change the name of the method here. It
-     * should return and associative array representing
-     * the model as it should be retrievable through
-     * the API.
-     *
-     * @var string|null
-     */
-    protected ?string $overrideTransformMethod = 'transform';
-
-    /**
-     * Stores meta data to be included in the
-     * response along side the actual data.
+     * Stores metadata to be included in the
+     * response alongside the actual data.
      *
      * @var array
      */
@@ -59,18 +48,19 @@ abstract class Controller extends BaseController
     public function __construct(
         protected Request $request,
         protected Defaults $defaults
-    ) {}
+    ) {
+        $this->modelName = $this->getModelName();
+    }
 
     /**
      * Use the UsesDefaultIndexMethod trait to use
-     * the default index method with your controller
+     * the default index method with your controller.
      *
      * @return JsonResponse
      */
     protected function _index(): JsonResponse
     {
-        $model_name = $this->getModelName();
-        $query = $model_name::query();
+        $query = $this->modelName::query();
 
         if ($this->request->has('all')) {
             return $this->respondFiltered($query);
@@ -228,32 +218,9 @@ abstract class Controller extends BaseController
         Collection $models
     ): JsonResponse
     {
-        $transformed = $models->map(function (Model $model) {
-            if ($this->overrideEnrichMethod) {
-                $model = $model->{$this->overrideEnrichMethod}();
-            }
+        $transformed = $models->map(fn ($m) => new ($this->resourceName)($m));
 
-            return $model->{$this->overrideEnrichMethod}();
-        });
-
-        return $this->respondWithData(array_values($transformed->toArray()));
-    }
-
-
-    /**
-     * Retrieve models from a query, paginated
-     * and responds with them.
-     *
-     * @param EloquentBuilder|QueryBuilder|Relation $query
-     * @return JsonResponse
-     */
-    protected function respondPaginated(
-        EloquentBuilder|QueryBuilder|Relation $query
-    ): JsonResponse
-    {
-        $results = $this->paginateModels($query);
-
-        return $this->respondWithPaginatedModels($results);
+        return $this->respondWithData($transformed->toArray());
     }
 
     /**
@@ -275,8 +242,6 @@ abstract class Controller extends BaseController
         return $query->paginate($perPage);
     }
 
-
-
     /**
      * Derives the model name from the controller name
      * and returns it. If $overrideModelName property
@@ -286,7 +251,7 @@ abstract class Controller extends BaseController
      */
     protected function getModelName(): string
     {
-        return $this->overrideModelName ?? preg_replace('/Controller$/', '', get_class($this));
+        return $this->modelName ?? preg_replace('/Controller$/', '', get_class($this));
     }
 
 }
