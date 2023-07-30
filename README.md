@@ -1,15 +1,19 @@
 # eloquent-api-filter
-Awesome and simple way to filter Eloquent queries right from the API call url
+Awesome and simple way to filter Eloquent queries right from the API URL.
 
+This library allows you to use a single generic controller to handle even complex API requests.
 
 # Installation
+## Package installation
 ```
 composer require matthenning/eloquent-api-filter
 ```
 
-#### Usage Example
+## Controller setup
 
-**Using the Trait**
+Usage demonstrated using the User model:
+
+**Trait (recommended)**
 ```
 class UserController extends Controller
 {  
@@ -25,7 +29,7 @@ class UserController extends Controller
 }
 ```
 
-**Using the Class**
+**Class**
 ```
 use Matthenning\EloquentApiFilter\EloquentApiFilter;
 
@@ -42,16 +46,16 @@ class UserController extends Controller
 }
 ```
 
-# Documentation
+# Usage
+
+## Filter
 
 ### URL Syntax
+
+Filter with specific operator: 
 `.../model?filter[field]=operator:comparison`
 
-`.../model?filter[field]=operator`
-
-`.../model?with[]=relation1`
-
-`.../model?with[]=relation1&filter[relation1.field]=operator:comparison`
+Filter for equality: `.../model?filter[field]=operator`
 
 ### Operators:
 * eq (equal, can be omitted)
@@ -69,8 +73,7 @@ class UserController extends Controller
 * today (for timestamps)
 * nottoday (for timestamps)
 
-### Example queries
-
+### Examples
 Matches all entities where name starts with Rob and deceased is null:
 
 `.../users?filter[name]=like:Rob*&filter[deceased]=null:`
@@ -85,69 +88,73 @@ Matches all Posts of Users where Post name contains "API"
 
 `.../users?filter[posts.name]=like:*API*`
 
-Filter timestamps.
+Get all users with name Rob and Bob
+
+`.../users?filter[name]=in:Rob,Bob`
+
+### Special filters
+
+#### Timestamps
 Matches all users whos' birthdays are today
 
 `.../users?filter[birthday]=today`
 
-Get all users with name Rob and Bob
+###
+## Sorting
 
-`.../users?filter[name]=in:Rob,Bob`
+### URL Syntax
+
+`.../model?orderBy[field]=direction`
+
+### Examples
 
 Limit and sorting.
 Matches the top 10 users with age of 21 or older sorted by name in ascending order
 
 `.../users?filter[age]=ge:21&order[name]=asc&limit=10`
 
+###
+## Select fields
+
+Select only specific columns. Might need additional work on your model transformation.
+
+### URL Syntax
+
+`.../model?select=column1,column2`
+
+### Examples
+
+`.../users?select=name,email`
+
+###
+## Joins
+
+### URL Syntax
+
+`.../model?with[]=relation1`
+
+`.../model?with[]=relation1&filter[relation1.field]=operator:comparison`
+
+### Examples
+
 Join posts-relation on users
 
 `.../users?with[]=posts`
 
-Filter for a base64 encoded value
+###
+## Complex values
+
+If you need to filter for a value with special characters, you can base64 encode the field to avoid breaking the filter syntax.
+
+### URL Syntax
+
+`.../model?filter[field]={{b64(value)}}`
+
+### Examples
 
 `.../model?filter[field]=lt:{{b64(MjAxNy0wNy0yMiAyMzo1OTo1OQ==)}}`
 
-### New in v1.5
-
-Added in and notin:
-```
-.../model?filter[state]=in:draft,deleted
-```
-
-### New in v1.4.1
-
-Added missing not-equal:
-```
-.../model?filter[state]=ne:deleted
-```
-
-### New in v1.4
-
-##### Filter by not existing related models
-
-```
-.../model?filter[!relation.type]=value
-```
-
-Will match if there is no model of the relation where type = 'value'
-
-### New in v1.3
-
-##### Use base64 encoded values
-```
-.../model?filter[field]=lt:{{b64(MjAxNy0wNy0yMiAyMzo1OTo1OQ==)}}
-```
-will result in:
-```
-SELECT 
-    * 
-FROM 
-    models 
-WHERE 
-    field < '2017-07-22 23:59:59'
-```
-
-
+###
 ### Known issues
 
 * Sorting by related fields doesn't work yet.
