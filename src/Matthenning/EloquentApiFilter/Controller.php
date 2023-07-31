@@ -259,6 +259,10 @@ abstract class Controller extends BaseController
         $transformed = $models->map(fn ($m) => new $resource($m));
 
         if ($solo) {
+            if ($transformed->count() < 1) {
+                return $this->respondNotFound();
+            }
+
             return $this->respondWithData($transformed->first());
         }
 
