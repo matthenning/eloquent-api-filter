@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Collection;
 use Matthenning\EloquentApiFilter\Traits\FiltersEloquentApi;
@@ -26,16 +27,6 @@ abstract class Controller extends BaseController
      * @var string|null
      */
     protected ?string $modelName = null;
-
-    /**
-     * If you want to use custom resources,
-     * define its name in this property.
-     *
-     * Resource doc: https://laravel.com/docs/master/eloquent-resources
-     *
-     * @var string|null
-     */
-    protected ?string $resourceName = Resource::class;
 
     /**
      * Stores metadata to be included in the
@@ -70,6 +61,49 @@ abstract class Controller extends BaseController
     }
 
     /**
+     * Use the UsesDefaultShowMethod trait to use
+     * the default show method with your controller.
+     *
+     *
+     * @param mixed $id
+     * @return JsonResponse
+     */
+    protected function _show(mixed $id): JsonResponse
+    {
+        $query = $this->modelName::where('id', $id);
+
+        return $this->respondFiltered($query, solo: true);
+    }
+
+    /**
+     * Use the UsesDefaultShowMethod trait to use
+     * the default show method with your controller.
+     *
+     * Use $pre and $post parameters to call function
+     * before and after deletion for additional cleanup.
+     *
+     * @param Request $request
+     * @param mixed $id
+     * @param callable|null $pre Function to execute before model deletion. Parameters: Request $request, Model $model
+     * @param callable|null $post Function to execute after model deletion. Parameters: Request $request, mixed $result_of_pre_function
+     * @return JsonResponse
+     */
+    protected function _destroy(
+        Request $request,
+        mixed $id,
+        callable $pre = null,
+        callable $post = null
+    ): JsonResponse
+    {
+        $model = $this->modelName::findOrFail($id);
+        $pre_result = $pre ? $pre($request, $model) : null;
+        $model->delete();
+        if ($post) $post($request, $pre_result);
+
+        return $this->respond();
+    }
+
+    /**
      * Returns the final JsonResponse to be sent
      * to the client.
      *
@@ -83,7 +117,7 @@ abstract class Controller extends BaseController
     ): JsonResponse
     {
         $status = $status ?? HttpStatusEnum::OK;
-        return new JsonResponse(json_encode($data), $status);
+        return new JsonResponse($data, $status->value);
     }
 
     /**
@@ -135,13 +169,14 @@ abstract class Controller extends BaseController
      * with the returned models.
      *
      * @param EloquentBuilder|QueryBuilder|Relation $query
+     * @param bool $solo
      * @return JsonResponse
      */
-    protected function respondFiltered(EloquentBuilder|QueryBuilder|Relation $query): JsonResponse
+    protected function respondFiltered(EloquentBuilder|QueryBuilder|Relation $query, bool $solo = false): JsonResponse
     {
         $results = $this->filterApiRequest($this->request, $query)->get();
 
-        return $this->respondWithModels($results);
+        return $this->respondWithModels($results, $solo);
     }
 
 
@@ -153,7 +188,7 @@ abstract class Controller extends BaseController
      * @return JsonResponse
      */
     protected function respondWithData(
-        array $data
+        array|JsonResource $data
     ): JsonResponse
     {
         return $this->respond([
@@ -212,13 +247,19 @@ abstract class Controller extends BaseController
      * Enriches and transform a collection of models.
      *
      * @param Collection $models
+     * @param bool $solo
      * @return JsonResponse
      */
     public function respondWithModels(
-        Collection $models
+        Collection $models,
+        bool $solo = false
     ): JsonResponse
     {
-        $transformed = $models->map(fn ($m) => new ($this->resourceName)($m));
+        $transformed = $models->map(fn ($m) => new ($this->modelName::$resourceName)($m));
+
+        if ($solo) {
+            return $this->respondWithData($transformed->first());
+        }
 
         return $this->respondWithData($transformed->toArray());
     }
