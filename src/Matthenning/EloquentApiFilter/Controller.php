@@ -255,7 +255,8 @@ abstract class Controller extends BaseController
         bool $solo = false
     ): JsonResponse
     {
-        $transformed = $models->map(fn ($m) => new ($this->modelName::$resourceName)($m));
+        $resource = $this->modelName::$resourceName ?? Resource::class;
+        $transformed = $models->map(fn ($m) => new $resource($m));
 
         if ($solo) {
             return $this->respondWithData($transformed->first());
