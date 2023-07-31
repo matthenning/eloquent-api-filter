@@ -303,7 +303,7 @@ Data contains the queried models and meta contains for example pagination detail
 
 ### Example
 
-```php
+```json
 {
     "meta": {
         "pagination": {
