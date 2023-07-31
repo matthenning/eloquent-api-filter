@@ -85,6 +85,8 @@ class EloquentApiFilter {
     {
         $query = $query->with(...$relations);
 
+        $this->meta['relations'] = $relations;
+
         return $query;
     }
 
