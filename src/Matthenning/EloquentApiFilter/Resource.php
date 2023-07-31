@@ -13,8 +13,8 @@ class Resource extends JsonResource
     {
         $data = [];
 
-        foreach ($this->resource->getAttributes() as $attribute) {
-            $data[$attribute] = $this->resource->$attribute;
+        foreach ($this->resource->getAttributes() as $key=>$attribute) {
+            $data[$key] = $this->resource->$key;
         }
 
         return $this->enrich($data);
