@@ -184,11 +184,11 @@ abstract class Controller extends BaseController
      * Respond with an object containing both
      * the data and the meta data.
      *
-     * @param array $data
+     * @param array|JsonResource|\stdClass $data
      * @return JsonResponse
      */
     protected function respondWithData(
-        array|JsonResource $data
+        array|JsonResource|\stdClass $data
     ): JsonResponse
     {
         return $this->respond([
