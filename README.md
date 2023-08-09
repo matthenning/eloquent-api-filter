@@ -320,7 +320,7 @@ Data contains the queried models and meta contains for example pagination detail
             "name": "Alexander",
             "age": 23
         },
-        { ... }, { ... }, ...
+        { /*...*/ }, { /*...*/ }
     ]
 }
 ```
