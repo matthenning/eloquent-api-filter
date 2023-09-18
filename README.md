@@ -65,22 +65,22 @@ protected ?string $modelName = Person::class;
 And you're done! Start querying your API following the method guidelines.
 See https://laravel.com/docs/10.x/controllers#actions-handled-by-resource-controller for actions store, show, index, update, destroy:
 ```http
-POST /persons
+POST /api/persons
 {
     "name": "Alexander",
     "age": 23
 }
 
-GET /persons/1
+GET /api/persons/1
 
-GET /persons/?filter[age]=23
+GET /api/persons/?filter[age]=23
 
-PUT /persons/1
+PUT /api/persons/1
 {
     "age": 24
 }
 
-DELETE /persons/1
+DELETE /api/persons/1
 ```
 
 #### Custom Resource
