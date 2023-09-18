@@ -11,11 +11,11 @@ class Resource extends JsonResource
 {
 
     /**
-     * @param Request $request
+     * @param Request|null $request
      * @return array
      * @throws ReflectionException
      */
-    public function toArray(Request $request): array
+    public function toArray(Request $request = null): array
     {
         $data = [];
 
