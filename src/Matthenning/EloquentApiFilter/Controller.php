@@ -150,7 +150,7 @@ abstract class Controller extends BaseController
      * before and after updating the model.
      *
      * @param Request $request
-     * @param int $id
+     * @param mixed $id
      * @param array $except
      * @param callable|null $pre
      * @param callable|null $post
@@ -161,7 +161,7 @@ abstract class Controller extends BaseController
      */
     public function _update(
         Request $request,
-        int $id,
+        mixed $id,
         array $except = [],
         callable $pre = null,
         callable $post = null
