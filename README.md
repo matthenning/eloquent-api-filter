@@ -1,7 +1,7 @@
 <p align="center"> <img src="logo.png" width="200px"></p>
 <h1 align="center">Eloquent API Filter</h1>
 <p align="center">
-Awesome and simple way to filter Eloquent queries right from the API URL without the clutter.
+Awesome and simple way to create, query and modify Eloquent models through your API - with only a few lines of code.
 </p>
 
 <p><br /></p>
