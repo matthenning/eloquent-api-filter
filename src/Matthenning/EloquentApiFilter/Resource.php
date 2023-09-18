@@ -5,10 +5,16 @@ namespace Matthenning\EloquentApiFilter;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use ReflectionClass;
+use ReflectionException;
 
 class Resource extends JsonResource
 {
 
+    /**
+     * @param Request $request
+     * @return array
+     * @throws ReflectionException
+     */
     public function toArray(Request $request): array
     {
         $data = [];
@@ -20,6 +26,13 @@ class Resource extends JsonResource
         return $this->enrich($data);
     }
 
+    /**
+     * Adds eager loaded relations to resource.
+     *
+     * @param $data
+     * @return array
+     * @throws ReflectionException
+     */
     public function enrich($data): array
     {
         foreach ($this->getRelationNames() as $relation=>$relationClass) {
@@ -36,7 +49,8 @@ class Resource extends JsonResource
     }
 
     /**
-     * @throws \ReflectionException
+     * @return array
+     * @throws ReflectionException
      */
     private function getRelationNames(): array
     {
