@@ -4,6 +4,7 @@ namespace Matthenning\EloquentApiFilter;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +12,13 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Collection;
+use Matthenning\EloquentApiFilter\Actions\DestroyAction;
+use Matthenning\EloquentApiFilter\Actions\StoreAction;
+use Matthenning\EloquentApiFilter\Actions\UpdateAction;
+use Matthenning\EloquentApiFilter\Exceptions\Exception;
+use Matthenning\EloquentApiFilter\Exceptions\MissingRequestFieldException;
+use Matthenning\EloquentApiFilter\Exceptions\ReflectionException;
+use Matthenning\EloquentApiFilter\Exceptions\UnhandleableRelationshipException;
 use Matthenning\EloquentApiFilter\Traits\FiltersEloquentApi;
 
 abstract class Controller extends BaseController
@@ -87,6 +95,7 @@ abstract class Controller extends BaseController
      * @param callable|null $pre Function to execute before model deletion. Parameters: Request $request, Model $model
      * @param callable|null $post Function to execute after model deletion. Parameters: Request $request, mixed $result_of_pre_function
      * @return JsonResponse
+     * @throws Exception
      */
     protected function _destroy(
         Request $request,
@@ -95,12 +104,74 @@ abstract class Controller extends BaseController
         callable $post = null
     ): JsonResponse
     {
-        $model = $this->modelName::findOrFail($id);
-        $pre_result = $pre ? $pre($request, $model) : null;
-        $model->delete();
-        if ($post) $post($request, $pre_result);
+        $pre_result = $pre ? $pre($request) : null;
+        DestroyAction::prepare($request, $this->getModelName(), $id)->auto()->invoke();
+        if ($post) $post($pre_result, $request);
 
         return $this->respond();
+
+    }
+
+    /**
+     * Use the UsesDefaultStoreMethod trait to use
+     * the default store method with your controller.
+     *
+     * Use $pre and $post parameters to call function
+     * before and after creation.
+     *
+     * @param Request $request
+     * @param array $except
+     * @param callable|null $pre
+     * @param callable|null $post
+     * @return JsonResponse
+     * @throws MissingRequestFieldException
+     * @throws ReflectionException
+     * @throws UnhandleableRelationshipException
+     */
+    public function _store(
+        Request $request,
+        array $except = [],
+        callable $pre = null,
+        callable $post = null
+    ): JsonResponse
+    {
+        $pre_result = $pre ? $pre($request) : null;
+        $model = StoreAction::prepare($request, $this->getModelName())->except($except)->auto()->invoke();
+        if ($post) $post($pre_result, $model, $request);
+
+        return $this->respondWithModel($model->fresh());
+    }
+
+    /**
+     * Use the UsesDefaultUpdateMethod trait to use
+     * the default update method with your controller.
+     *
+     * Use $pre and $post parameters to call function
+     * before and after updating the model.
+     *
+     * @param Request $request
+     * @param int $id
+     * @param array $except
+     * @param callable|null $pre
+     * @param callable|null $post
+     * @return JsonResponse
+     * @throws MissingRequestFieldException
+     * @throws ReflectionException
+     * @throws UnhandleableRelationshipException
+     */
+    public function _update(
+        Request $request,
+        int $id,
+        array $except = [],
+        callable $pre = null,
+        callable $post = null
+    ): JsonResponse
+    {
+        $pre_result = $pre ? $pre($request) : null;
+        $model = UpdateAction::prepare($request, $this->getModelName(), $id)->except($except)->auto()->invoke();
+        if ($post) $post($pre_result, $model, $request);
+
+        return $this->respondWithModel($model->fresh());
     }
 
     /**
@@ -265,6 +336,20 @@ abstract class Controller extends BaseController
 
             return $this->respondWithData($transformed->first());
         }
+
+        return $this->respondWithData($transformed->toArray());
+    }
+
+    /**
+     * @param Model $model
+     * @return JsonResponse
+     */
+    public function respondWithModel(
+        Model $model
+    ): JsonResponse
+    {
+        $resource = $this->modelName::$resourceName ?? Resource::class;
+        $transformed = new $resource($model);
 
         return $this->respondWithData($transformed->toArray());
     }
