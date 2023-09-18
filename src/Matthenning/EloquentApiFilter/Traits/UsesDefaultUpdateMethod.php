@@ -13,7 +13,7 @@ trait UsesDefaultUpdateMethod
      * @param mixed $id
      * @return JsonResponse
      */
-    public function store(Request $request, mixed $id): JsonResponse
+    public function update(Request $request, mixed $id): JsonResponse
     {
         return $this->_update($request, $id);
     }
