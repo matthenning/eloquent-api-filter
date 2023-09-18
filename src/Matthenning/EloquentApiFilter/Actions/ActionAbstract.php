@@ -57,7 +57,7 @@ abstract class ActionAbstract
      */
     public function __construct(Request $request, string $model_name)
     {
-        $this->request = $request->valid();
+        $this->request = collect($request->all());
         $this->model_name = $model_name;
 
         $this->fields = $this->request->keys()->filter(fn($k) => $k != 'relations');
