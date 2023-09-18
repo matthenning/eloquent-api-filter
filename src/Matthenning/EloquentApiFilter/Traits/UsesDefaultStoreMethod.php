@@ -14,7 +14,7 @@ trait UsesDefaultStoreMethod
      */
     public function store(Request $request): JsonResponse
     {
-        return $this->store($request);
+        return $this->_store($request);
     }
 
 
