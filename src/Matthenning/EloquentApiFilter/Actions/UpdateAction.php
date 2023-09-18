@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Matthenning\EloquentApiFilter\Exceptions\MissingRequestFieldException;
-use Matthenning\EloquentApiFilter\Exceptions\ReflectionException;
-use Matthenning\EloquentApiFilter\Exceptions\UnhandleableRelationshipException;
 
 class UpdateAction extends ActionAbstract
 {
