@@ -37,11 +37,7 @@ class Resource extends JsonResource
     {
         foreach ($this->getRelationNames() as $relation=>$relationClass) {
             if ($this->resource->relationLoaded($relation)) {
-                if (isset(($this->resource->$relation)::$resourceName) && ($this->resource->$relation)::$resourceName != null) {
-                    $data[$relation] = new (($this->resource->$relation)::$resourceName)($this->resource->$relation);
-                } else {
-                    $data[$relation] = $this->resource->$relation;
-                }
+                $data[$relation] = $this->resource->$relation;
             }
         }
 
