@@ -301,17 +301,30 @@ GET /model?filter[field]=lt:{{b64(MjAxNy0wNy0yMiAyMzo1OTo1OQ==)}}
 Create a new model:
 
 ```http
+POST /api/model
+{ ... }
+```
+
+Update an existing model:
+
+```http
 PUT /api/model/id
 { ... }
 ```
 
+
 ### Example:
 
 ```http
+POST /api/persons
 {
-    "id": 1,
     "name": "Alexander",
-    "age": 24,
+    "age": 23,
+}
+
+PUT /api/persons/1
+{
+    "age": 24
 }
 ```
 
