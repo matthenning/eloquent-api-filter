@@ -111,45 +111,6 @@ class PersonResource extends \Matthenning\EloquentApiFilter\Resource
 }
 ```
 
-#### Dependencies
-
-Attach dependencies by including them in the update/store request. This allows you to load a model from the API with its dependencies, modify the model and change dependencies, and send the modified object back to the API. This saves separate API calls for updating the model and its dependencies.
-
-```http
-POST /api/groups
-{
-    "name": "Members"
-}
-
-POST /api/groups
-{
-    "name": "VIPs"
-}
-
-GET /api/persons/1/?with[]=groups
-```
-
-_Modify group memberships or model properties in the frontend and send the changes back to the API in a single API call_
-
-```http
-PUT /api/persons/1
-{
-    "id": 1,
-    "name": "Alexander",
-    "age": 24,
-    "groups": [
-        {
-            "id": 1,
-            "name": "Members"
-        },
-        {
-            "id": 2,
-            "name": "VIPs"
-        }
-    ]
-}
-```
-
 ### Alternative: Use the trait
 
 If you'd like to handle the controller and resource logic yourself entirely, can use the FiltersEloquentApi trait in your controller.
@@ -334,6 +295,64 @@ GET /model?filter[field]=lt:{{b64(MjAxNy0wNy0yMiAyMzo1OTo1OQ==)}}
 ```
 
 <p><br /></p>
+
+## Create/Update
+
+Create a new model:
+
+```http
+PUT /api/model/id
+{ ... }
+```
+
+### Example:
+
+```http
+{
+    "id": 1,
+    "name": "Alexander",
+    "age": 24,
+}
+```
+
+### Dependencies
+
+Attach dependencies by including them in the update/store request. This allows you to load a model from the API with its dependencies, modify the model and change dependencies, and send the modified object back to the API. This saves separate API calls for updating the model and its dependencies.
+
+```http
+POST /api/groups
+{
+    "name": "Members"
+}
+
+POST /api/groups
+{
+    "name": "VIPs"
+}
+
+GET /api/persons/1/?with[]=groups
+```
+
+_Modify group memberships or model properties in the frontend and send the changes back to the API in a single API call_
+
+```http
+PUT /api/persons/1
+{
+    "id": 1,
+    "name": "Alexander",
+    "age": 24,
+    "groups": [
+        {
+            "id": 1,
+            "name": "Members"
+        },
+        {
+            "id": 2,
+            "name": "VIPs"
+        }
+    ]
+}
+```
 
 # Responses
 
