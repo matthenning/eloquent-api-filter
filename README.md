@@ -32,7 +32,7 @@ composer require matthenning/eloquent-api-filter
 You have the choice to use either of the following methods to leverage the filter.
 The easiest method out of the box is to simply extend the included controller.
 
-### Option 1: Extend the controller (recommended)
+### Recommended: Extend the controller
 
 The easiest way to use the Eloquent API Filter is to extend its controller.
 For this example, let's say you have a model named Person. You'll just have to create a matching controller and use the included traits to enable the default methods for index, show, store, update, destroy:
@@ -111,7 +111,39 @@ class PersonResource extends \Matthenning\EloquentApiFilter\Resource
 }
 ```
 
-### Option 2: Use the trait
+#### Dependencies
+
+Attach dependencies by including them in the update/store request. This allows you to load a model from the API with its dependencies, modify the model and change dependencies, and send the modified object back to the API. This saves separate API calls for updating the model and its dependencies.
+
+```http
+POST /api/groups
+{
+    "name": "Members"
+}
+
+POST /api/groups
+{
+    "name": "VIPs"
+}
+
+PUT /api/persons
+{
+    "name": "Alexander",
+    "age": 23,
+    "groups": [
+        {
+            "id": 1,
+            "name": "Members"
+        },
+        {
+            "id": 2,
+            "name": "VIPs"
+        }
+    ]
+}
+```
+
+### Alternative: Use the trait
 
 If you'd like to handle the controller and resource logic yourself entirely, can use the FiltersEloquentApi trait in your controller.
 
