@@ -24,8 +24,7 @@ class UpdateAction extends ActionAbstract
      */
     public static function prepare(Request $request, string $model_name, int $id): self
     {
-        $action = new self($request, $model_name);
-        $action->setModel($id);
+        $action = new self($request, $model_name, $id);
 
         return $action;
     }
@@ -36,7 +35,7 @@ class UpdateAction extends ActionAbstract
      */
     public function invoke(): Model
     {
-        $this->updateModel();
+        $this->updateModel()->updateRelations();
 
         $this->model->save();
 
@@ -65,30 +64,6 @@ class UpdateAction extends ActionAbstract
 
             $this->model->$field = $this->request->get($field);
         }
-
-        if ($this->auto) {
-            foreach ((new $this->model_name)->getFillable() as $fillable) {
-                if ($this->fields->contains($fillable)) continue;
-
-                $field = preg_replace('/_id$/', '', $fillable);
-                if ($this->relations->has($field)) {
-                    $this->model->$fillable = $this->relations->get($field);
-                }
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param int $id
-     * @return $this
-     * @throws ModelNotFoundException
-     */
-    public function setModel(int $id): self
-    {
-        $this->id = $id;
-        $this->model = $this->model_name::findOrFail($this->id);
 
         return $this;
     }
