@@ -126,10 +126,17 @@ POST /api/groups
     "name": "VIPs"
 }
 
-PUT /api/persons
+GET /api/persons/1/?with[]=groups
+```
+
+_Modify group memberships or model properties in the frontend and send the changes back to the API in a single API call_
+
+```http
+PUT /api/persons/1
 {
+    "id": 1,
     "name": "Alexander",
-    "age": 23,
+    "age": 24,
     "groups": [
         {
             "id": 1,
